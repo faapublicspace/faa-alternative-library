@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_blank">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>/ɔːlˈtəːnətɪv/ – digital library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600..900&family=Roboto+Mono:ital,wght@0,400..700;1,400..700&family=Source+Code+Pro:wght@400..700&display=swap" rel="stylesheet">
+<style>
+  /* same tokens as the exposition stylesheet (pg.css) */
+  :root {
+    --paper: #ffffff; --ink: #000000; --red: #d0302b; --mute: #6b6b6b; --rule: #000000;
+    --mono: "Roboto Mono", "Source Code Pro", monospace;
+    --display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+    --text: clamp(15px, 0.25vw + 13.5px, 18px);
+    --gut: clamp(16px, 4.5vw, 72px);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 var(--text)/1.6 var(--mono); -webkit-font-smoothing: antialiased; padding: clamp(32px, 6vw, 88px) var(--gut) 96px; }
+  main { max-width: 1180px; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: .14em; text-underline-offset: .2em; }
+  a:hover { color: var(--red); }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+
+  h1 { font: 900 clamp(44px, 9vw, 132px)/.9 var(--display); letter-spacing: -.05em; margin: 0 0 .3em -.04em; }
+  .lede { max-width: 52ch; margin: 0 0 28px; }
+  .button { display: inline-block; background: var(--red); color: var(--paper); text-decoration: none;
+    font: 800 clamp(18px, 1.2vw + 9px, 26px)/1.1 var(--display); letter-spacing: -.01em; padding: .72em 1.05em .78em; }
+  .button:hover { background: var(--ink); color: var(--paper); }
+
+  .filters { margin: clamp(40px, 6vw, 72px) 0 32px; border-top: 2px solid var(--rule); padding-top: 22px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; margin-bottom: 18px; }
+  label { display: block; font-size: .82em; color: var(--mute); margin-bottom: 6px; }
+  input[type=search], select { font: inherit; color: inherit; background: var(--paper); border: 2px solid var(--ink); border-radius: 0; padding: .45em .6em; min-width: min(100%, 320px); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .chip { font: 700 .95em/1.1 var(--display); letter-spacing: -.01em; background: var(--paper); color: var(--ink);
+    border: 2px solid var(--ink); border-radius: 999px; padding: .42em .8em; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+  .chip:hover { border-color: var(--red); }
+  .clear { font: inherit; background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; text-decoration-color: var(--red); cursor: pointer; }
+  .count { color: var(--mute); margin: 0 0 8px; }
+
+  .entries { list-style: none; margin: 0; padding: 0; }
+  .entry { border-top: 2px solid var(--rule); padding: 24px 0 28px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 8px 40px; }
+  .entry:last-child { border-bottom: 2px solid var(--rule); }
+  .entry h2 { font: 800 clamp(22px, 1.6vw + 12px, 38px)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 .3em; }
+  .meta { margin: 0; }
+  .type { color: var(--mute); margin: 0 0 .6em; }
+  .desc { margin: .7em 0 0; max-width: 60ch; }
+  .side { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .side .chip { font-size: .82em; }
+  .open { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; }
+  details { width: 100%; }
+  summary { cursor: pointer; color: var(--mute); }
+  details ul { list-style: none; padding: 0; margin: 8px 0 0; }
+  details li { margin: 0 0 6px; }
+  details button { font: 700 1em/1.25 var(--display); text-align: left; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--red); }
+  .by { color: var(--mute); font-size: .82em; margin: 0; }
+  .entry:target, .entry.flash { animation: flash 1.2s ease-out; }
+  @keyframes flash { from { background: #f6d5d3; } to { background: transparent; } }
+
+  .empty { border-top: 2px solid var(--rule); padding-top: 24px; max-width: 52ch; }
+  #filters[hidden] ~ #empty { margin-top: clamp(40px, 6vw, 72px); }
+  .empty p { margin: 0 0 20px; }
+
+  @media (max-width: 760px) {
+    .entry { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) { .entry.flash { animation: none; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Digital library</h1>
+  <p class="lede">Reading, viewing and listening suggested by students, artists and researchers at Fontys Academy of the Arts. Every entry is reviewed before it appears here.</p>
+  <a class="button" id="submit" href="#">Submit to the Digital Library</a>
+
+  <section class="filters" id="filters" hidden>
+    <div class="row">
+      <div><label for="q">Search titles, authors and descriptions</label><input type="search" id="q" autocomplete="off"></div>
+      <div><label for="type">Type</label><select id="type"><option value="">All types</option></select></div>
+    </div>
+    <label id="kw-label">Keywords: pick one or more to narrow the list</label>
+    <ul class="chips" id="keywords" aria-labelledby="kw-label"></ul>
+  </section>
+
+  <p class="count" id="count" aria-live="polite"></p>
+  <ul class="entries" id="entries"></ul>
+  <div class="empty" id="empty" hidden></div>
+</main>
+
+<script>
+  // The approved entries come from the library spreadsheet, through its Apps Script (Code.gs, ?format=json).
+  const DATA_URL = 'https://script.google.com/macros/s/AKfycbw8IlDIwVGTKYAOAKwe6zwVgwxOR24v72FOFJi_vnlauL-0tc8DFxcbp_OdNQmLYS5V/exec?format=json';
+  const state = { q: '', type: '', keywords: new Set() };
+  const $ = id => document.getElementById(id);
+  const el = (tag, props, ...kids) => {
+    const n = Object.assign(document.createElement(tag), props || {});
+    kids.flat().forEach(k => k != null && n.append(k));
+    return n;
+  };
+
+  // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk. Zoom back to the phone's width.
+  if (matchMedia('(pointer: coarse)').matches && screen.width && innerWidth > screen.width * 1.3) {
+    document.documentElement.style.zoom = (innerWidth / screen.width).toFixed(2);
+  }
+
+  function start(DATA) {
+    if (DATA.formUrl) $('submit').href = DATA.formUrl; else $('submit').hidden = true;
+
+    const items = DATA.items;
+    items.forEach(it => { it.kw = new Set(it.keywords.map(k => k.toLowerCase())); });
+
+    // related: entries sharing the most keywords
+    items.forEach(it => {
+      it.related = items.filter(o => o !== it)
+        .map(o => ({ o, n: [...o.kw].filter(k => it.kw.has(k)).length }))
+        .filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 4).map(x => x.o);
+    });
+
+    function buildFilters() {
+      if (!items.length) return;
+      $('filters').hidden = false;
+      const counts = {};
+      items.forEach(it => it.keywords.forEach(k => {
+        const key = k.toLowerCase();
+        counts[key] = counts[key] || { label: k, n: 0 };
+        counts[key].n++;
+      }));
+      const order = DATA.keywords.map(k => k.toLowerCase());
+      Object.keys(counts)
+        .sort((a, b) => (order.indexOf(a) + 1 || 999) - (order.indexOf(b) + 1 || 999) || a.localeCompare(b))
+        .forEach(key => $('keywords').append(el('li', null, chip(key, counts[key].label + ' (' + counts[key].n + ')'))));
+      [...new Set(items.map(it => it.type).filter(Boolean))]
+        .forEach(t => $('type').append(el('option', { value: t, textContent: t })));
+      $('q').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+      $('type').addEventListener('change', e => { state.type = e.target.value; render(); });
+    }
+
+    function chip(key, label) {
+      const b = el('button', { type: 'button', className: 'chip', textContent: label });
+      b.dataset.key = key;
+      b.setAttribute('aria-pressed', state.keywords.has(key));
+      b.addEventListener('click', () => toggle(key));
+      return b;
+    }
+
+    function toggle(key) {
+      state.keywords.has(key) ? state.keywords.delete(key) : state.keywords.add(key);
+      document.querySelectorAll('#keywords .chip').forEach(b => b.setAttribute('aria-pressed', state.keywords.has(b.dataset.key)));
+      render();
+    }
+
+    function clearFilters() {
+      state.q = ''; state.type = ''; state.keywords.clear();
+      $('q').value = ''; $('type').value = '';
+      document.querySelectorAll('#keywords .chip').forEach(b => b.setAttribute('aria-pressed', 'false'));
+      render();
+    }
+
+    function matches(it) {
+      if (state.type && it.type !== state.type) return false;
+      for (const k of state.keywords) if (!it.kw.has(k)) return false;
+      if (state.q) {
+        const hay = [it.title, it.authors, it.description, it.keywords.join(' ')].join(' ').toLowerCase();
+        if (!hay.includes(state.q)) return false;
+      }
+      return true;
+    }
+
+    function entry(it) {
+      const meta = [it.authors, it.year].filter(Boolean).join(', ');
+      const open = el('p', { className: 'open' });
+      if (it.link) open.append(el('a', { href: it.link, rel: 'noopener', textContent: 'Open' }));
+
+      const side = el('div', { className: 'side' });
+      if (it.keywords.length) side.append(el('ul', { className: 'chips' }, it.keywords.map(k => el('li', null, chip(k.toLowerCase(), k)))));
+      if (it.related.length) {
+        side.append(el('details', null,
+          el('summary', { textContent: 'Related entries (' + it.related.length + ')' }),
+          el('ul', null, it.related.map(o => el('li', null,
+            el('button', { type: 'button', textContent: o.title, onclick: () => jump(o) }))))));
+      }
+      if (it.submittedBy) side.append(el('p', { className: 'by', textContent: 'Suggested by ' + it.submittedBy }));
+
+      return el('li', { className: 'entry', id: 'entry-' + it.id },
+        el('div', null,
+          el('h2', { textContent: it.title }),
+          meta ? el('p', { className: 'meta', textContent: meta }) : null,
+          it.type ? el('p', { className: 'type', textContent: it.type }) : null,
+          it.description ? el('p', { className: 'desc', textContent: it.description }) : null,
+          open.childNodes.length ? open : null),
+        side);
+    }
+
+    function jump(o) {
+      if (!matches(o)) clearFilters();
+      const n = $('entry-' + o.id);
+      n.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      n.classList.remove('flash'); void n.offsetWidth; n.classList.add('flash');
+    }
+
+    function render() {
+      const shown = items.filter(matches);
+      $('entries').replaceChildren(...shown.map(entry));
+      const filtered = state.q || state.type || state.keywords.size;
+      $('count').textContent = items.length ? (filtered ? shown.length + ' of ' + items.length + ' entries' : items.length + (items.length === 1 ? ' entry' : ' entries')) : '';
+      const empty = $('empty');
+      empty.hidden = shown.length > 0;
+      if (!items.length) {
+        empty.replaceChildren(el('p', { textContent: 'The library is empty for now. Suggest the first entry: something you read, watched or listened to that changed how you think about knowing.' }));
+      } else if (!shown.length) {
+        empty.replaceChildren(el('p', { textContent: 'No entries match these filters.' }),
+          el('button', { type: 'button', className: 'clear', textContent: 'Clear the filters', onclick: clearFilters }));
+      }
+    }
+
+    buildFilters();
+    render();
+  }
+
+  $('count').textContent = 'Loading the library…';
+  // credentials: 'omit' keeps the visitor's Google sign-in out of the request, so phones signed in to Google work too
+  fetch(DATA_URL, { credentials: 'omit', cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(start)
+    .catch(() => {
+      $('count').textContent = '';
+      $('submit').hidden = true;
+      const empty = $('empty');
+      empty.hidden = false;
+      empty.replaceChildren(el('p', { textContent: 'The library could not be loaded just now. Reload the page in a moment.' }));
+    });
+</script>
+</body>
+</html>
