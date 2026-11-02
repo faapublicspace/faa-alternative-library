@@ -9,92 +9,101 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600..900&family=Roboto+Mono:ital,wght@0,400..700;1,400..700&family=Source+Code+Pro:wght@400..700&display=swap" rel="stylesheet">
 <style>
-  /* same tokens as the exposition stylesheet (pg.css) */
+  /* same tokens as the exposition stylesheet (pg.css). Sizes are in rem, so phones can scale the whole page (see the script). */
   :root {
     --paper: #ffffff; --ink: #000000; --red: #d0302b; --mute: #6b6b6b; --rule: #000000;
     --mono: "Roboto Mono", "Source Code Pro", monospace;
     --display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
-    --text: clamp(15px, 0.25vw + 13.5px, 18px);
-    --gut: clamp(16px, 4.5vw, 72px);
+    --text: clamp(.9375rem, 0.25vw + .8438rem, 1.125rem);
+    --gut: clamp(1rem, 4.5vw, 4.5rem);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body { font: 400 var(--text)/1.6 var(--mono); -webkit-font-smoothing: antialiased; padding: clamp(32px, 6vw, 88px) var(--gut) 96px; }
-  main { max-width: 1180px; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { font: 400 var(--text)/1.6 var(--mono); -webkit-font-smoothing: antialiased; padding: clamp(2rem, 6vw, 5.5rem) var(--gut) 6rem; }
+  main { max-width: 73.75rem; }
   a { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: .14em; text-underline-offset: .2em; }
   a:hover { color: var(--red); }
-  :focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+  :focus-visible { outline: .1875rem solid var(--red); outline-offset: .1875rem; }
 
-  h1 { font: 900 clamp(44px, 9vw, 132px)/.9 var(--display); letter-spacing: -.05em; margin: 0 0 .3em -.04em; }
-  .lede { max-width: 52ch; margin: 0 0 28px; }
+  h1 { font: 900 clamp(2.75rem, 9vw, 8.25rem)/.9 var(--display); letter-spacing: -.05em; margin: 0 0 .3em -.04em; }
+  .lede { max-width: 52ch; margin: 0 0 1.75rem; }
   .button { display: inline-block; background: var(--red); color: var(--paper); text-decoration: none;
-    font: 800 clamp(18px, 1.2vw + 9px, 26px)/1.1 var(--display); letter-spacing: -.01em; padding: .72em 1.05em .78em; }
+    font: 800 clamp(1rem, .5vw + .75rem, 1.1875rem)/1.1 var(--display); letter-spacing: -.01em; padding: .62em .95em .68em; }
   .button:hover { background: var(--ink); color: var(--paper); }
-  .button.quiet { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
+  .button.quiet { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 .125rem var(--ink); }
   .button.quiet:hover { background: var(--ink); color: var(--paper); }
-  .actions { display: flex; flex-wrap: wrap; gap: 12px 16px; }
+  .actions { display: flex; flex-wrap: wrap; gap: .75rem 1rem; }
 
-  .filters { margin: clamp(40px, 6vw, 72px) 0 32px; border-top: 2px solid var(--rule); padding-top: 22px; }
-  .row { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: end; margin-bottom: 18px; }
-  label { display: block; font-size: .82em; color: var(--mute); margin-bottom: 6px; }
-  input[type=search], select { font: inherit; color: inherit; background: var(--paper); border: 2px solid var(--ink); border-radius: 0; padding: .45em .6em; min-width: min(100%, 320px); }
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .filters { margin: clamp(2.5rem, 6vw, 4.5rem) 0 2rem; border-top: .125rem solid var(--rule); padding-top: 1.375rem; }
+  .row { display: flex; flex-wrap: wrap; gap: .75rem 1.25rem; align-items: end; margin-bottom: 1.125rem; }
+  label { display: block; font-size: .82em; color: var(--mute); margin-bottom: .375rem; }
+  input[type=search], select { font: inherit; color: inherit; background: var(--paper); border: .125rem solid var(--ink); border-radius: 0; padding: .45em .6em; min-width: min(100%, 20rem); }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; list-style: none; }
   .chip { font: 700 .95em/1.1 var(--display); letter-spacing: -.01em; background: var(--paper); color: var(--ink);
-    border: 2px solid var(--ink); border-radius: 999px; padding: .42em .8em; cursor: pointer; }
+    border: .125rem solid var(--ink); border-radius: 62.4375rem; padding: .42em .8em; cursor: pointer; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
   .chip:hover { border-color: var(--red); }
   .clear { font: inherit; background: none; border: 0; padding: 0; color: inherit; text-decoration: underline; text-decoration-color: var(--red); cursor: pointer; }
-  .count { color: var(--mute); margin: 0 0 8px; }
+  .count { color: var(--mute); margin: 0 0 .5rem; }
 
   .entries { list-style: none; margin: 0; padding: 0; }
-  .entry { border-top: 2px solid var(--rule); padding: 24px 0 28px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 8px 40px; }
-  .entry:last-child { border-bottom: 2px solid var(--rule); }
-  .entry h2 { font: 800 clamp(22px, 1.6vw + 12px, 38px)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 .3em; }
+  .entry { border-top: .125rem solid var(--rule); padding: 1.5rem 0 1.75rem; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: .5rem 2.5rem; }
+  .entry:last-child { border-bottom: .125rem solid var(--rule); }
+  .entry h2 { font: 800 clamp(1.375rem, 1.6vw + .75rem, 2.375rem)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 .3em; }
   .meta { margin: 0; }
   .type { color: var(--mute); margin: 0 0 .6em; }
   .desc { margin: .7em 0 0; max-width: 60ch; }
-  .side { display: flex; flex-direction: column; gap: 14px; align-items: flex-start; }
+  .side { display: flex; flex-direction: column; gap: .875rem; align-items: flex-start; }
   .side .chip { font-size: .82em; }
   details { width: 100%; }
   summary { cursor: pointer; color: var(--mute); }
-  details ul { list-style: none; padding: 0; margin: 8px 0 0; }
-  details li { margin: 0 0 6px; }
+  details ul { list-style: none; padding: 0; margin: .5rem 0 0; }
+  details li { margin: 0 0 .375rem; }
   details button { font: 700 1em/1.25 var(--display); text-align: left; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--red); }
 
-  /* right column, above the keywords: an image thumbnail, or the link between two red "+" of varying size */
+  /* right column, above the keywords: an image thumbnail, or the link between two "+" of varying size */
   .thumb { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; max-width: 100%; }
-  .thumb img { display: block; max-width: 100%; max-height: 300px; height: auto; }
-  .thumb:hover img { outline: 3px solid var(--red); outline-offset: 3px; }
-  .url { display: block; font: 700 clamp(18px, 1.1vw + 9px, 26px)/1.25 var(--display); letter-spacing: -.015em;
+  .thumb img { display: block; max-width: 100%; max-height: 18.75rem; height: auto; }
+  .thumb:hover img { outline: .1875rem solid var(--red); outline-offset: .1875rem; }
+  .url { display: block; font: 700 clamp(1.125rem, 1.1vw + .5625rem, 1.625rem)/1.25 var(--display); letter-spacing: -.015em;
     text-decoration: none; overflow-wrap: break-word; }
   .url:hover { color: var(--red); }
-  .url .plus { color: var(--red); font-weight: 800; line-height: 0; }
+  .url .plus { color: var(--ink); font-weight: 800; line-height: 0; }
   .url .plus:first-child { margin-right: .3em; }
   .url .plus:last-child { margin-left: .3em; }
 
-  dialog { border: 0; padding: 0; background: none; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); overflow: visible; }
+  dialog { border: 0; padding: 0; background: none; max-width: calc(100vw - 2rem); max-height: calc(100vh - 2rem); overflow: visible; }
   dialog::backdrop { background: rgba(0, 0, 0, .88); }
-  dialog img { display: block; max-width: calc(100vw - 32px); max-height: calc(100vh - 96px); width: auto; height: auto; }
-  dialog p { color: var(--paper); margin: 12px 0 0; font-size: .9em; }
-  dialog .close { position: absolute; top: -12px; right: -12px; width: 44px; height: 44px; border: 0; border-radius: 50%;
-    background: var(--red); color: var(--paper); font: 800 26px/1 var(--display); cursor: pointer; }
+  dialog img { display: block; max-width: calc(100vw - 2rem); max-height: calc(100vh - 6rem); width: auto; height: auto; }
+  dialog p { color: var(--paper); margin: .75rem 0 0; font-size: .9em; }
+  dialog .close { position: absolute; top: -.75rem; right: -.75rem; width: 2.75rem; height: 2.75rem; border: 0; border-radius: 50%;
+    background: var(--red); color: var(--paper); font: 800 1.625rem/1 var(--display); cursor: pointer; }
   .entry:target, .entry.flash { animation: flash 1.2s ease-out; }
   @keyframes flash { from { background: #f6d5d3; } to { background: transparent; } }
 
-  .empty { border-top: 2px solid var(--rule); padding-top: 24px; max-width: 52ch; }
-  #filters[hidden] ~ #empty { margin-top: clamp(40px, 6vw, 72px); }
-  .empty p { margin: 0 0 20px; }
+  /* jump to top: appears once the list has been scrolled well down */
+  .top { position: fixed; right: var(--gut); bottom: 1.5rem; z-index: 5; font: 800 1rem/1 var(--display); letter-spacing: -.01em;
+    background: var(--paper); color: var(--ink); border: 0; box-shadow: inset 0 0 0 .125rem var(--ink); padding: .7em .95em .75em; cursor: pointer;
+    opacity: 0; visibility: hidden; transition: opacity .2s ease, visibility .2s; }
+  .top:hover { background: var(--ink); color: var(--paper); }
+  .top.on { opacity: 1; visibility: visible; }
+
+  .empty { border-top: .125rem solid var(--rule); padding-top: 1.5rem; max-width: 52ch; }
+  #filters[hidden] ~ #empty { margin-top: clamp(2.5rem, 6vw, 4.5rem); }
+  .empty p { margin: 0 0 1.25rem; }
 
   @media (max-width: 760px) {
     .entry { grid-template-columns: 1fr; }
   }
+  .phone .entry { grid-template-columns: 1fr; }
   @media (prefers-reduced-motion: reduce) { .entry.flash { animation: none; } }
 </style>
 </head>
 <body>
 <main>
   <h1>Digital library</h1>
-  <p class="lede">Images and links shared by students, artists and researchers at Fontys Academy of the Arts. Every entry is reviewed before it appears here.</p>
+  <p class="lede">Images and links shared by students, artists and researchers at Fontys Academy of the Arts. Every entry is reviewed before being published in this library.</p>
   <div class="actions">
     <a class="button" id="submit" href="submit.html" target="_self">Submit to the Digital Library</a>
     <!-- _top: leave the RC frame and open the exposition's Home page in the whole window -->
@@ -115,6 +124,8 @@
   <div class="empty" id="empty" hidden></div>
 </main>
 
+<button type="button" class="top" id="top">↑ Top</button>
+
 <dialog id="viewer" aria-label="Image">
   <button type="button" class="close" aria-label="Close">×</button>
   <img alt="">
@@ -132,10 +143,17 @@
     return n;
   };
 
-  // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk. Zoom back to the phone's width.
+  // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk.
+  // Every size is in rem, so a larger root font size scales the page back up. (CSS zoom would leave iPhone text tiny.)
   if (matchMedia('(pointer: coarse)').matches && screen.width && innerWidth > screen.width * 1.3) {
-    document.documentElement.style.zoom = (innerWidth / screen.width).toFixed(2);
+    document.documentElement.style.fontSize = (16 * innerWidth / screen.width).toFixed(1) + 'px';
+    document.documentElement.classList.add('phone');
   }
+
+  // the Top button shows after two screens of scrolling
+  const topButton = $('top');
+  addEventListener('scroll', () => topButton.classList.toggle('on', scrollY > innerHeight * 2), { passive: true });
+  topButton.onclick = () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
 
   function start(DATA) {
 
