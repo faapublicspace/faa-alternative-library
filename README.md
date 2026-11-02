@@ -20,7 +20,16 @@ spreadsheet's Apps Script every time someone opens it.
 | Page (this repository) | `index.html`, published with GitHub Pages |
 | Entries | Google spreadsheet "/ɔːlˈtəːnətɪv/ – digital library", tab "Responses" |
 | Data address | `DATA_URL` near the bottom of `index.html` (the spreadsheet's Apps Script, `?format=json`) |
+| Submission page | `submit.html`. It sends the answers into the library's Google Form, which writes them into the spreadsheet |
 | Shown in | Research Catalogue exposition 5004460, page "Library" (an iframe page pointing here) |
+
+## If a question in the Google Form changes
+
+`submit.html` knows each form question by an internal name (`entry.405838017` and so on). The names stay the
+same when you edit a question's wording or options. If you **add** a question, or delete and recreate one,
+the page needs the new name: open the form's public link, view the page source, search for the question title,
+and copy its `entry.` number into `submit.html`. Changing an option's text (for example a keyword) also means
+changing it in `submit.html`, because the form only accepts options it knows.
 
 ## Moving this to another GitHub account or organisation
 

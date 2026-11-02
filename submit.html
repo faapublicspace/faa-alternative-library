@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base target="_blank">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>/ɔːlˈtəːnətɪv/ – submit to the digital library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600..900&family=Roboto+Mono:ital,wght@0,400..700;1,400..700&family=Source+Code+Pro:wght@400..700&display=swap" rel="stylesheet">
+<style>
+  /* same tokens as the exposition stylesheet (pg.css) and the library page */
+  :root {
+    --paper: #ffffff; --ink: #000000; --red: #d0302b; --mute: #6b6b6b; --rule: #000000;
+    --mono: "Roboto Mono", "Source Code Pro", monospace;
+    --display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
+    --text: clamp(15px, 0.25vw + 13.5px, 18px);
+    --gut: clamp(16px, 4.5vw, 72px);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); color: var(--ink); }
+  body { font: 400 var(--text)/1.6 var(--mono); -webkit-font-smoothing: antialiased; padding: clamp(32px, 6vw, 88px) var(--gut) 96px; }
+  main { max-width: 860px; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: .14em; text-underline-offset: .2em; }
+  a:hover { color: var(--red); }
+  :focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+
+  h1 { font: 900 clamp(40px, 7.5vw, 112px)/.92 var(--display); letter-spacing: -.05em; margin: 0 0 .35em -.04em; }
+  .lede { max-width: 52ch; margin: 0 0 12px; }
+  .back { margin: 0 0 clamp(36px, 5vw, 64px); }
+
+  form { border-top: 2px solid var(--rule); }
+  .field { border: 0; margin: 0; padding: 22px 0 24px; border-bottom: 2px solid var(--rule); min-width: 0; }
+  .field > label, .field > legend { display: block; padding: 0; margin: 0 0 10px; font: 800 clamp(19px, 1vw + 12px, 26px)/1.15 var(--display); letter-spacing: -.015em; }
+  .opt { font: 400 .62em/1 var(--mono); letter-spacing: 0; color: var(--mute); margin-left: .5em; vertical-align: .15em; }
+  .hint { color: var(--mute); font-size: .86em; margin: -4px 0 12px; max-width: 58ch; }
+  input[type=text], input[type=email], input[type=url], textarea {
+    width: 100%; font: inherit; color: inherit; background: var(--paper);
+    border: 2px solid var(--ink); border-radius: 0; padding: .55em .7em;
+  }
+  textarea { min-height: 7.5em; resize: vertical; }
+  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--red); outline-offset: 0; }
+  .short { max-width: 12ch; }
+
+  /* radio buttons and checkboxes drawn as the library's chips; the real inputs stay for keyboards and screen readers */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .chip span {
+    display: inline-block; font: 700 .95em/1.1 var(--display); letter-spacing: -.01em;
+    border: 2px solid var(--ink); border-radius: 999px; padding: .5em .85em; background: var(--paper); color: var(--ink);
+  }
+  .chip input:checked + span { background: var(--ink); color: var(--paper); }
+  .chip:hover span { border-color: var(--red); }
+  .chip input:focus-visible + span { outline: 3px solid var(--red); outline-offset: 3px; }
+
+  .consent { display: flex; gap: 12px; align-items: flex-start; max-width: 60ch; cursor: pointer; }
+  .consent input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); flex: none; }
+
+  .error { color: var(--red); font-size: .86em; margin: 10px 0 0; }
+  .error:empty { display: none; }
+
+  .actions { padding-top: 32px; display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; }
+  .button { display: inline-block; background: var(--red); color: var(--paper); text-decoration: none; border: 0; border-radius: 0; cursor: pointer;
+    font: 800 clamp(18px, 1.2vw + 9px, 26px)/1.1 var(--display); letter-spacing: -.01em; padding: .72em 1.05em .78em; }
+  .button:hover { background: var(--ink); color: var(--paper); }
+  .button[disabled] { background: var(--mute); cursor: wait; }
+  .status { margin: 0; }
+
+  .done { border-top: 2px solid var(--rule); padding-top: 24px; max-width: 56ch; }
+  .done h2 { font: 800 clamp(26px, 2vw + 14px, 44px)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 .4em; }
+  .done p { margin: 0 0 18px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Submit to the Digital Library</h1>
+  <p class="lede">Suggest something to read, watch or listen to: a book, an article, an artwork, a recording. Every entry is reviewed before it appears in the library.</p>
+  <p class="back"><a href="index.html" target="_self">Back to the library</a></p>
+
+  <form id="form" novalidate>
+    <div class="field">
+      <label for="f-title">Title</label>
+      <input type="text" id="f-title" name="entry.405838017" required autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-authors">Author(s)</label>
+      <input type="text" id="f-authors" name="entry.59084843" required autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-year">Year <span class="opt">optional</span></label>
+      <input type="text" id="f-year" name="entry.905395942" class="short" inputmode="numeric" pattern="[0-9]{1,4}" autocomplete="off">
+    </div>
+    <fieldset class="field" id="f-type">
+      <legend>Type</legend>
+      <div class="chips" data-name="entry.1968750510" data-kind="radio" data-required
+           data-options="Book|Article or chapter|Artwork or project|Video|Audio|Website|Other"></div>
+    </fieldset>
+    <div class="field">
+      <label for="f-link">Link <span class="opt">optional</span></label>
+      <p class="hint" id="h-link">A web address where the work can be found, if there is one.</p>
+      <input type="url" id="f-link" name="entry.1297834900" placeholder="https://" aria-describedby="h-link" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-why">Why should others read, watch or listen to this? <span class="opt">optional</span></label>
+      <p class="hint" id="h-why">One to three sentences. This text is shown in the library.</p>
+      <textarea id="f-why" name="entry.903480236" aria-describedby="h-why"></textarea>
+    </div>
+    <fieldset class="field">
+      <legend>Keywords <span class="opt">optional</span></legend>
+      <p class="hint">Pick any that fit.</p>
+      <div class="chips" data-name="entry.1441734722" data-kind="checkbox"
+           data-options="Embodied experience|Oral traditions|Collective memory|Ecological relationships|Spiritual practices|Community-based processes|Epistemic plurality|Situated knowledge|Relational ways of knowing|Intercultural translation and dialogue"></div>
+    </fieldset>
+    <div class="field">
+      <label for="f-extra">Other keywords <span class="opt">optional</span></label>
+      <p class="hint" id="h-extra">Separate them with commas.</p>
+      <input type="text" id="f-extra" name="entry.1806480912" aria-describedby="h-extra" autocomplete="off">
+    </div>
+    <div class="field">
+      <label for="f-name">Your name</label>
+      <p class="hint" id="h-name">Shown in the library as “Suggested by”.</p>
+      <input type="text" id="f-name" name="entry.1772128189" required aria-describedby="h-name" autocomplete="name">
+    </div>
+    <div class="field">
+      <label for="f-email">Your email</label>
+      <p class="hint" id="h-email">Only for questions about your suggestion. Never published.</p>
+      <input type="email" id="f-email" name="entry.11218738" required aria-describedby="h-email" autocomplete="email">
+    </div>
+    <fieldset class="field">
+      <legend>Publication</legend>
+      <label class="consent">
+        <input type="checkbox" id="f-consent" name="entry.1396815607" required
+               value="I agree that this entry, including my name, may be published in the library after review.">
+        <span>I agree that this entry, including my name, may be published in the library after review.</span>
+      </label>
+    </fieldset>
+    <p class="error" id="error" role="alert"></p>
+    <div class="actions">
+      <button type="submit" class="button" id="send">Send suggestion</button>
+      <p class="status" id="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="done" id="done" hidden tabindex="-1">
+    <h2>Thank you</h2>
+    <p>Your suggestion has been sent. It appears in the library once it has been reviewed.</p>
+    <p><a href="index.html" target="_self">Back to the library</a> &nbsp; <a href="submit.html" target="_self">Suggest another</a></p>
+  </div>
+</main>
+
+<script>
+  // Answers go to the library's Google Form, which writes them into the spreadsheet Ulla reviews.
+  // The entry.* names belong to that form's questions: if a question is added or renamed there, update this page.
+  const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSe6ng_LtabsQyejw3iC6C9dgoyGzA9WJxUWO9b60-6Edpoz_Q/formResponse';
+  const $ = id => document.getElementById(id);
+
+  // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk. Zoom back to the phone's width.
+  if (matchMedia('(pointer: coarse)').matches && screen.width && innerWidth > screen.width * 1.3) {
+    document.documentElement.style.zoom = (innerWidth / screen.width).toFixed(2);
+  }
+
+  // build the chip groups from their option lists
+  document.querySelectorAll('.chips[data-options]').forEach((group, g) => {
+    group.dataset.options.split('|').forEach((opt, i) => {
+      const label = document.createElement('label');
+      label.className = 'chip';
+      const input = Object.assign(document.createElement('input'), { type: group.dataset.kind, name: group.dataset.name, value: opt, id: `c${g}-${i}` });
+      const span = Object.assign(document.createElement('span'), { textContent: opt });
+      label.append(input, span);
+      group.append(label);
+    });
+  });
+
+  function problems() {
+    const form = $('form');
+    for (const el of form.querySelectorAll('input[required], textarea[required]')) {
+      if (el.type === 'checkbox' ? !el.checked : !el.value.trim()) return [el, 'Please fill in everything that is not marked optional.'];
+      if (!el.checkValidity()) return [el, el.type === 'email' ? 'Please check the email address.' : 'Please check this field.'];
+    }
+    for (const group of form.querySelectorAll('.chips[data-required]')) {
+      if (!group.querySelector('input:checked')) return [group.querySelector('input'), 'Please choose a type.'];
+    }
+    for (const el of form.querySelectorAll('#f-year, #f-link')) {
+      if (el.value.trim() && !el.checkValidity()) return [el, el.id === 'f-year' ? 'Please give the year as a number, for example 2018.' : 'Please give the link as a full web address, starting with https://'];
+    }
+    return null;
+  }
+
+  $('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const issue = problems();
+    if (issue) { $('error').textContent = issue[1]; issue[0].focus(); return; }
+    $('error').textContent = '';
+    $('send').disabled = true;
+    $('status').textContent = 'Sending…';
+
+    const body = new URLSearchParams();
+    for (const el of $('form').elements) {
+      if (!el.name || el.disabled) continue;
+      if ((el.type === 'checkbox' || el.type === 'radio') && !el.checked) continue;
+      if (el.value.trim()) body.append(el.name, el.value.trim());
+    }
+    try {
+      // no-cors: Google gives no readable answer, so a sent request counts as success.
+      // credentials: 'omit' keeps any Google sign-in out of it, so phones signed in to Google work too.
+      await fetch(FORM_ACTION, { method: 'POST', mode: 'no-cors', credentials: 'omit', body });
+      $('form').hidden = true;
+      document.querySelector('.back').hidden = true;
+      $('done').hidden = false;
+      $('done').focus();
+    } catch (err) {
+      $('send').disabled = false;
+      $('status').textContent = '';
+      $('error').textContent = 'Your suggestion could not be sent just now. Check your connection and try again.';
+    }
+  });
+</script>
+</body>
+</html>
