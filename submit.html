@@ -9,87 +9,93 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600..900&family=Roboto+Mono:ital,wght@0,400..700;1,400..700&family=Source+Code+Pro:wght@400..700&display=swap" rel="stylesheet">
 <style>
-  /* same tokens as the exposition stylesheet (pg.css) and the library page */
+  /* same tokens as the exposition stylesheet (pg.css) and the library page. Sizes are in rem, so phones can scale the whole page (see the script). */
   :root {
     --paper: #ffffff; --ink: #000000; --red: #d0302b; --mute: #6b6b6b; --rule: #000000;
     --mono: "Roboto Mono", "Source Code Pro", monospace;
     --display: "Inter Tight", "Helvetica Neue", Arial, sans-serif;
-    --text: clamp(15px, 0.25vw + 13.5px, 18px);
-    --gut: clamp(16px, 4.5vw, 72px);
+    --text: clamp(.9375rem, 0.25vw + .8438rem, 1.125rem);
+    --gut: clamp(1rem, 4.5vw, 4.5rem);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; background: var(--paper); color: var(--ink); }
-  body { font: 400 var(--text)/1.6 var(--mono); -webkit-font-smoothing: antialiased; padding: clamp(32px, 6vw, 88px) var(--gut) 96px; }
-  main { max-width: 860px; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  body { font: 400 var(--text)/1.6 var(--mono); -webkit-font-smoothing: antialiased; padding: clamp(2rem, 6vw, 5.5rem) var(--gut) 6rem; }
+  main { max-width: 53.75rem; }
   a { color: inherit; text-decoration: underline; text-decoration-color: var(--red); text-decoration-thickness: .14em; text-underline-offset: .2em; }
   a:hover { color: var(--red); }
-  :focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+  :focus-visible { outline: .1875rem solid var(--red); outline-offset: .1875rem; }
 
-  h1 { font: 900 clamp(40px, 7.5vw, 112px)/.92 var(--display); letter-spacing: -.05em; margin: 0 0 .35em -.04em; }
-  .lede { max-width: 52ch; margin: 0 0 12px; }
-  .back { margin: 0 0 clamp(36px, 5vw, 64px); }
+  h1 { font: 900 clamp(2.5rem, 7.5vw, 7rem)/.92 var(--display); letter-spacing: -.05em; margin: 0 0 .35em -.04em; }
+  .lede { max-width: 52ch; margin: 0 0 .75rem; }
+  .nav { display: flex; flex-wrap: wrap; gap: .75rem 1rem; margin: 1.5rem 0 clamp(2.25rem, 5vw, 4rem); }
 
-  form { border-top: 2px solid var(--rule); }
-  .field { border: 0; margin: 0; padding: 22px 0 24px; border-bottom: 2px solid var(--rule); min-width: 0; }
-  .field > label, .field > legend { display: block; padding: 0; margin: 0 0 10px; font: 800 clamp(19px, 1vw + 12px, 26px)/1.15 var(--display); letter-spacing: -.015em; }
+  form { border-top: .125rem solid var(--rule); }
+  .field { border: 0; margin: 0; padding: 1.375rem 0 1.5rem; border-bottom: .125rem solid var(--rule); min-width: 0; }
+  .field > label, .field > legend { display: block; padding: 0; margin: 0 0 .625rem; font: 800 clamp(1.1875rem, 1vw + .75rem, 1.625rem)/1.15 var(--display); letter-spacing: -.015em; }
   .opt { font: 400 .62em/1 var(--mono); letter-spacing: 0; color: var(--mute); margin-left: .5em; vertical-align: .15em; }
-  .hint { color: var(--mute); font-size: .86em; margin: -4px 0 12px; max-width: 58ch; }
+  .hint { color: var(--mute); font-size: .86em; margin: -.25rem 0 .75rem; max-width: 58ch; }
   input[type=text], input[type=email], input[type=url], textarea {
     width: 100%; font: inherit; color: inherit; background: var(--paper);
-    border: 2px solid var(--ink); border-radius: 0; padding: .55em .7em;
+    border: .125rem solid var(--ink); border-radius: 0; padding: .55em .7em;
   }
   textarea { min-height: 7.5em; resize: vertical; }
-  input:focus-visible, textarea:focus-visible { outline: 3px solid var(--red); outline-offset: 0; }
+  input:focus-visible, textarea:focus-visible { outline: .1875rem solid var(--red); outline-offset: 0; }
   .short { max-width: 12ch; }
 
   /* radio buttons and checkboxes drawn as the library's chips; the real inputs stay for keyboards and screen readers */
-  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: .5rem; }
   .chip { position: relative; }
   .chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
   .chip span {
     display: inline-block; font: 700 .95em/1.1 var(--display); letter-spacing: -.01em;
-    border: 2px solid var(--ink); border-radius: 999px; padding: .5em .85em; background: var(--paper); color: var(--ink);
+    border: .125rem solid var(--ink); border-radius: 62.4375rem; padding: .5em .85em; background: var(--paper); color: var(--ink);
   }
   .chip input:checked + span { background: var(--ink); color: var(--paper); }
   .chip:hover span { border-color: var(--red); }
-  .chip input:focus-visible + span { outline: 3px solid var(--red); outline-offset: 3px; }
+  .chip input:focus-visible + span { outline: .1875rem solid var(--red); outline-offset: .1875rem; }
 
-  .consent { display: flex; gap: 12px; align-items: flex-start; max-width: 60ch; cursor: pointer; }
-  .consent input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--ink); flex: none; }
+  .consent { display: flex; gap: .75rem; align-items: flex-start; max-width: 60ch; cursor: pointer; }
+  .consent input { width: 1.375rem; height: 1.375rem; margin: .125rem 0 0; accent-color: var(--ink); flex: none; }
 
-  .error { color: var(--red); font-size: .86em; margin: 10px 0 0; }
+  .error { color: var(--red); font-size: .86em; margin: .625rem 0 0; }
   .error:empty { display: none; }
 
-  .actions { padding-top: 32px; display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; }
+  .actions { padding-top: 2rem; display: flex; flex-wrap: wrap; gap: 1rem 1.75rem; align-items: center; }
   .button { display: inline-block; background: var(--red); color: var(--paper); text-decoration: none; border: 0; border-radius: 0; cursor: pointer;
-    font: 800 clamp(18px, 1.2vw + 9px, 26px)/1.1 var(--display); letter-spacing: -.01em; padding: .72em 1.05em .78em; }
+    font: 800 clamp(1.125rem, 1.2vw + .5625rem, 1.625rem)/1.1 var(--display); letter-spacing: -.01em; padding: .72em 1.05em .78em; }
   .button:hover { background: var(--ink); color: var(--paper); }
+  /* the outlined navigation buttons, as "Back to Home" in the library */
+  .button.quiet { background: var(--paper); color: var(--ink); box-shadow: inset 0 0 0 .125rem var(--ink);
+    font-size: clamp(1rem, .5vw + .75rem, 1.1875rem); padding: .62em .95em .68em; }
+  .button.quiet:hover { background: var(--ink); color: var(--paper); }
   .button[disabled] { background: var(--mute); cursor: wait; }
   .status { margin: 0; }
 
-  .preview { display: block; max-width: min(100%, 320px); max-height: 320px; margin-top: 14px; border: 2px solid var(--ink); }
+  .preview { display: block; max-width: min(100%, 20rem); max-height: 20rem; margin-top: .875rem; border: .125rem solid var(--ink); }
   .preview[hidden] { display: none; }
   input[type=file] { font: inherit; max-width: 100%; }
   input[type=file]::file-selector-button { font: 700 .95em/1.1 var(--display); letter-spacing: -.01em; color: var(--ink); background: var(--paper);
-    border: 2px solid var(--ink); border-radius: 999px; padding: .5em .85em; margin-right: 14px; cursor: pointer; }
+    border: .125rem solid var(--ink); border-radius: 62.4375rem; padding: .5em .85em; margin-right: .875rem; cursor: pointer; }
   input[type=file]::file-selector-button:hover { border-color: var(--red); }
-  .trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .trap { position: absolute; left: -624.9375rem; width: .0625rem; height: .0625rem; overflow: hidden; }
 
-  .done { border-top: 2px solid var(--rule); padding-top: 24px; max-width: 56ch; }
-  .done h2 { font: 800 clamp(26px, 2vw + 14px, 44px)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 .4em; }
-  .done p { margin: 0 0 18px; }
+  .done { border-top: .125rem solid var(--rule); padding-top: 1.5rem; max-width: 56ch; }
+  .done h2 { font: 800 clamp(1.625rem, 2vw + .875rem, 2.75rem)/1.08 var(--display); letter-spacing: -.02em; margin: 0 0 .4em; }
+  .done p { margin: 0 0 1.125rem; }
 </style>
 </head>
 <body>
 <main>
   <h1>Submit to the Digital Library</h1>
-  <p class="lede">Share an image, or a link to something online: a text, an artwork, a recording. Every entry is reviewed before it appears in the library.</p>
-  <p class="back"><a href="index.html" target="_self">Back to the library</a></p>
+  <p class="lede">Share an image, or a link to a publication, book, article, artwork, video … Every entry is reviewed before being published in this library. Your contribution is published anonymously.</p>
+  <!-- _top: leave the RC frame and open the exposition's Home page in the whole window -->
+  <div class="nav"><a class="button quiet" href="index.html" target="_self">Back to Library</a> <a class="button quiet" href="https://www.researchcatalogue.net/view/5004460/5004461" target="_top">Back to Home</a></div>
 
   <form id="form" novalidate>
     <fieldset class="field">
       <legend>What are you adding?</legend>
-      <p class="hint">An image you upload, or a link to something online: a text, a video, a recording, a project.</p>
+      <p class="hint">Choose one: upload an image, or give a link.</p>
       <div class="chips" id="f-type" data-name="type" data-kind="radio" data-required data-options="Image|Link"></div>
     </fieldset>
     <div class="field" id="image-field" hidden>
@@ -116,13 +122,12 @@
       <input type="text" id="f-year" name="year" class="short" inputmode="numeric" pattern="[0-9]{1,4}" autocomplete="off">
     </div>
     <div class="field">
-      <label for="f-why">Why should others see this? <span class="opt">optional</span></label>
-      <p class="hint" id="h-why">One to three sentences. This text is shown in the library.</p>
-      <textarea id="f-why" name="description" aria-describedby="h-why"></textarea>
+      <label for="f-why">Briefly describe the relevance of this listing. <span class="opt">optional</span></label>
+      <textarea id="f-why" name="description"></textarea>
     </div>
     <fieldset class="field">
       <legend>Keywords <span class="opt">optional</span></legend>
-      <p class="hint">Pick any that fit.</p>
+      <p class="hint">Pick from existing keywords.</p>
       <div class="chips" data-name="keywords" data-kind="checkbox"
            data-options="Embodied experience|Oral traditions|Collective memory|Ecological relationships|Spiritual practices|Community-based processes|Epistemic plurality|Situated knowledge|Relational ways of knowing|Intercultural translation and dialogue"></div>
     </fieldset>
@@ -132,13 +137,13 @@
       <input type="text" id="f-extra" name="extra" aria-describedby="h-extra" autocomplete="off">
     </div>
     <div class="field">
-      <label for="f-name">Your name</label>
+      <label for="f-name">Your full name</label>
       <p class="hint" id="h-name">Not published. Only for the editors.</p>
       <input type="text" id="f-name" name="name" required aria-describedby="h-name" autocomplete="name">
     </div>
     <div class="field">
-      <label for="f-email">Your email</label>
-      <p class="hint" id="h-email">Only for questions about your suggestion. Never published.</p>
+      <label for="f-email">Your Fontys email</label>
+      <p class="hint" id="h-email">Only for questions about your contribution. Never published.</p>
       <input type="email" id="f-email" name="email" required aria-describedby="h-email" autocomplete="email">
     </div>
     <div class="trap" aria-hidden="true">
@@ -154,15 +159,17 @@
     </fieldset>
     <p class="error" id="error" role="alert"></p>
     <div class="actions">
-      <button type="submit" class="button" id="send">Send suggestion</button>
+      <button type="submit" class="button" id="send">Submit</button>
       <p class="status" id="status" aria-live="polite"></p>
     </div>
   </form>
 
   <div class="done" id="done" hidden tabindex="-1">
     <h2>Thank you</h2>
-    <p>Your suggestion has been sent. It appears in the library once it has been reviewed.</p>
-    <p><a href="index.html" target="_self">Back to the library</a> &nbsp; <a href="submit.html" target="_self">Suggest another</a></p>
+    <p>Your contribution to the digital library has been sent. We will review it within five working days.
+      Revising your contribution after submitting is not possible.</p>
+    <div class="nav"><a class="button quiet" href="index.html" target="_self">Back to Library</a> <a class="button quiet" href="https://www.researchcatalogue.net/view/5004460/5004461" target="_top">Back to Home</a></div>
+    <p><a href="submit.html" target="_self">Submit another</a></p>
   </div>
 </main>
 
@@ -174,9 +181,10 @@
   const $ = id => document.getElementById(id);
   let image = null; // { mime, data } once a picture is chosen and shrunk
 
-  // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk. Zoom back to the phone's width.
+  // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk.
+  // Every size is in rem, so a larger root font size scales the page back up. (CSS zoom would leave iPhone text tiny.)
   if (matchMedia('(pointer: coarse)').matches && screen.width && innerWidth > screen.width * 1.3) {
-    document.documentElement.style.zoom = (innerWidth / screen.width).toFixed(2);
+    document.documentElement.style.fontSize = (16 * innerWidth / screen.width).toFixed(1) + 'px';
   }
 
   // build the chip groups from their option lists
@@ -235,7 +243,7 @@
   }
 
   const FAILED = {
-    busy: 'The library is receiving a lot of suggestions right now. Please try again in an hour.',
+    busy: 'The library is receiving a lot of contributions right now. Please try again in an hour.',
     image: 'The image could not be accepted. Try a JPEG or PNG.',
   };
 
@@ -260,13 +268,13 @@
       const res = await fetch(SUBMIT_URL, { method: 'POST', credentials: 'omit', body: JSON.stringify(entry) }).then(r => r.json());
       if (!res.ok) throw new Error(res.error);
       $('form').hidden = true;
-      document.querySelector('.back').hidden = true;
+      document.querySelector('main > .nav').hidden = true;
       $('done').hidden = false;
       $('done').focus();
     } catch (err) {
       $('send').disabled = false;
       $('status').textContent = '';
-      $('error').textContent = FAILED[err.message] || 'Your suggestion could not be sent just now. Check your connection and try again.';
+      $('error').textContent = FAILED[err.message] || 'Your contribution could not be sent just now. Check your connection and try again.';
     }
   });
 </script>
