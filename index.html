@@ -58,16 +58,16 @@
   details li { margin: 0 0 6px; }
   details button { font: 700 1em/1.25 var(--display); text-align: left; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-decoration-color: var(--red); }
 
-  /* right column, above the keywords: an image thumbnail, or the link as a chain of words joined by red "+" (as on the About page) */
+  /* right column, above the keywords: an image thumbnail, or the link between two red "+" of varying size */
   .thumb { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; max-width: 100%; }
   .thumb img { display: block; max-width: 100%; max-height: 300px; height: auto; }
   .thumb:hover img { outline: 3px solid var(--red); outline-offset: 3px; }
-  .url { display: flex; flex-wrap: wrap; align-items: baseline; gap: .1em 0; margin: 0; padding: 0; list-style: none;
-    font: 700 clamp(20px, 1.6vw + 8px, 32px)/1.05 var(--display); letter-spacing: -.02em; text-decoration: none; overflow-wrap: break-word; }
+  .url { display: block; font: 700 clamp(18px, 1.1vw + 9px, 26px)/1.25 var(--display); letter-spacing: -.015em;
+    text-decoration: none; overflow-wrap: break-word; }
   .url:hover { color: var(--red); }
-  .url span:nth-child(3n+2) { font-size: .68em; }
-  .url span:nth-child(4n+3) { font-size: 1.35em; }
-  .url span:not(:last-child)::after { content: "+"; color: var(--red); font-weight: 800; margin: 0 .38em; }
+  .url .plus { color: var(--red); font-weight: 800; line-height: 0; }
+  .url .plus:first-child { margin-right: .3em; }
+  .url .plus:last-child { margin-left: .3em; }
 
   dialog { border: 0; padding: 0; background: none; max-width: calc(100vw - 32px); max-height: calc(100vh - 32px); overflow: visible; }
   dialog::backdrop { background: rgba(0, 0, 0, .88); }
@@ -199,7 +199,11 @@
         side.append(el('button', { type: 'button', className: 'thumb', onclick: () => view(it), ariaLabel: 'Enlarge image: ' + it.title },
           el('img', { src: it.image.thumb, alt: it.title, loading: 'lazy' })));
       } else if (it.link) {
-        side.append(el('a', { className: 'url', href: it.link, rel: 'noopener', title: it.link }, urlWords(it.link).map(w => el('span', { textContent: w }))));
+        // the two plus signs change size from entry to entry, like the word lists in the exposition
+        const sizes = ['.8em', '1.6em', '1.15em', '2em', '1em'];
+        const plus = n => el('span', { className: 'plus', textContent: '+', ariaHidden: 'true', style: 'font-size:' + sizes[n % sizes.length] });
+        side.append(el('a', { className: 'url', href: it.link, rel: 'noopener', title: it.link },
+          plus(it.id), el('span', null, shortUrl(it.link).split('/').flatMap((part, i) => i ? [el('wbr'), '/' + part] : [part])), plus(it.id + 2)));
       }
       if (it.keywords.length) side.append(el('ul', { className: 'chips' }, it.keywords.map(k => el('li', null, chip(k.toLowerCase(), k)))));
       if (it.related.length) {
@@ -218,18 +222,14 @@
         side);
     }
 
-    // "https://www.example.org/texts/on-knowing.html?x=1" → example.org + texts + on knowing
-    function urlWords(link) {
+    // "https://www.example.org/texts/on-knowing.html?x=1" → example.org/texts/on-knowing.html
+    function shortUrl(link) {
       try {
         const u = new URL(link);
-        const words = u.pathname.split('/').filter(Boolean).map(p => {
-          try { p = decodeURIComponent(p); } catch (e) {}
-          p = p.replace(/\.(html?|php|aspx?)$/i, '').replace(/[-_+]+/g, ' ').trim();
-          return p.length > 32 ? p.slice(0, 32).replace(/\s+\S*$/, '') + '…' : p;
-        });
-        // long paths: keep the first and the last part, which usually name the section and the page
-        return [u.hostname.replace(/^www\./, ''), ...(words.length > 3 ? [words[0], words[words.length - 1]] : words)];
-      } catch (e) { return [link]; }
+        let t = u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/$/, '');
+        try { t = decodeURI(t); } catch (e) {}
+        return t.length > 70 ? t.slice(0, 68) + '…' : t;
+      } catch (e) { return link; }
     }
 
     const viewer = $('viewer');
