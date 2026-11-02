@@ -76,7 +76,7 @@
 <main>
   <h1>Digital library</h1>
   <p class="lede">Reading, viewing and listening suggested by students, artists and researchers at Fontys Academy of the Arts. Every entry is reviewed before it appears here.</p>
-  <a class="button" id="submit" href="#">Submit to the Digital Library</a>
+  <a class="button" id="submit" href="submit.html" target="_self">Submit to the Digital Library</a>
 
   <section class="filters" id="filters" hidden>
     <div class="row">
@@ -109,7 +109,6 @@
   }
 
   function start(DATA) {
-    if (DATA.formUrl) $('submit').href = DATA.formUrl; else $('submit').hidden = true;
 
     const items = DATA.items;
     items.forEach(it => { it.kw = new Set(it.keywords.map(k => k.toLowerCase())); });
@@ -229,7 +228,6 @@
     .then(start)
     .catch(() => {
       $('count').textContent = '';
-      $('submit').hidden = true;
       const empty = $('empty');
       empty.hidden = false;
       empty.replaceChildren(el('p', { textContent: 'The library could not be loaded just now. Reload the page in a moment.' }));
