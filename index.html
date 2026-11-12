@@ -69,6 +69,13 @@
   .thumb { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; max-width: 100%; }
   .thumb img { display: block; max-width: 100%; max-height: 18.75rem; height: auto; }
   .thumb:hover img { outline: .1875rem solid var(--red); outline-offset: .1875rem; }
+  .credit { color: var(--mute); font-size: .8em; margin: -.375rem 0 0; }
+  /* a PDF: its first page, opening the file in Drive's viewer */
+  a.thumb { text-decoration: none; cursor: pointer; }
+  .thumb img.page { box-shadow: 0 0 0 .125rem var(--ink); }
+  .pdf-tag { display: inline-block; margin-top: .5rem; font: 800 .9em/1 var(--display); letter-spacing: -.01em; }
+  .pdf-box { display: flex; align-items: center; justify-content: center; width: 9rem; aspect-ratio: 1 / 1.414;
+    border: .125rem solid var(--ink); font: 900 1.6em/1 var(--display); }
   .url { display: block; font: 700 clamp(1.125rem, 1.1vw + .5625rem, 1.625rem)/1.25 var(--display); letter-spacing: -.015em;
     text-decoration: none; overflow-wrap: break-word; }
   .url:hover { color: var(--red); }
@@ -230,6 +237,13 @@
       if (it.image) {
         side.append(el('button', { type: 'button', className: 'thumb', onclick: () => view(it), ariaLabel: 'Enlarge image: ' + it.title },
           el('img', { src: it.image.thumb, alt: it.title, loading: 'lazy' })));
+        if (it.credit) side.append(el('p', { className: 'credit', textContent: 'Photo: ' + it.credit }));
+      } else if (it.pdf) {
+        // Drive draws the first page; until it has (new uploads), a plain "PDF" box stands in
+        const page = el('img', { className: 'page', src: it.pdf.thumb, alt: '', loading: 'lazy' });
+        page.onerror = () => page.replaceWith(el('span', { className: 'pdf-box', textContent: 'PDF' }));
+        side.append(el('a', { className: 'thumb', href: it.pdf.view, rel: 'noopener', ariaLabel: 'Open the PDF: ' + it.title },
+          page, el('br'), el('span', { className: 'pdf-tag', textContent: 'Open PDF ↗' })));
       } else if (it.link) {
         // the two plus signs change size from entry to entry, like the word lists in the exposition
         const sizes = ['.8em', '1.6em', '1.15em', '2em', '1em'];
@@ -269,7 +283,7 @@
     viewer.onclick = e => { if (e.target === viewer) viewer.close(); }; // click outside the image
     function view(it) {
       Object.assign(viewer.querySelector('img'), { src: it.image.full, alt: it.title });
-      viewer.querySelector('p').textContent = [it.title, it.authors, it.year].filter(Boolean).join(' · ');
+      viewer.querySelector('p').textContent = [it.title, it.authors, it.year, it.credit && 'Photo: ' + it.credit].filter(Boolean).join(' · ');
       viewer.showModal();
     }
 

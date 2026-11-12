@@ -54,7 +54,11 @@
   .chip input:checked + span { background: var(--ink); color: var(--paper); }
   .chip:hover span { border-color: var(--red); }
   .chip input:focus-visible + span { outline: .1875rem solid var(--red); outline-offset: .1875rem; }
+  .chip input:disabled + span { opacity: .35; }
+  .chip:has(input:disabled) { cursor: not-allowed; }
 
+  .consent[hidden] { display: none; }
+  .consent + .consent { margin-top: 1rem; }
   .consent { display: flex; gap: .75rem; align-items: flex-start; max-width: 60ch; cursor: pointer; }
   .consent input { width: 1.375rem; height: 1.375rem; margin: .125rem 0 0; accent-color: var(--ink); flex: none; }
 
@@ -88,21 +92,31 @@
 <body>
 <main>
   <h1>Submit to the Digital Library</h1>
-  <p class="lede">Share an image, or a link to a publication, book, article, artwork, video … Every entry is reviewed before being published in this library. Your contribution is published anonymously.</p>
+  <p class="lede">Share an image or a PDF, or a link to a publication, book, article, artwork, video … Every entry is reviewed before being published in this library. Your contribution is published anonymously.</p>
   <!-- _top: leave the RC frame and open the exposition's Home page in the whole window -->
   <div class="nav"><a class="button quiet" href="index.html" target="_self">Back to Library</a> <a class="button quiet" href="https://www.researchcatalogue.net/view/5004460/5004461" target="_top">Back to Home</a></div>
 
   <form id="form" novalidate>
     <fieldset class="field">
       <legend>What are you adding?</legend>
-      <p class="hint">Choose one: upload an image, or give a link.</p>
-      <div class="chips" id="f-type" data-name="type" data-kind="radio" data-required data-options="Image|Link"></div>
+      <p class="hint">Choose one: upload an image or a PDF, or give a link.</p>
+      <div class="chips" id="f-type" data-name="type" data-kind="radio" data-required data-options="Image|PDF|Link"></div>
     </fieldset>
     <div class="field" id="image-field" hidden>
       <label for="f-image">Image</label>
       <p class="hint" id="h-image">A photo or picture file. Large photos are made smaller before sending.</p>
       <input type="file" id="f-image" accept="image/*" aria-describedby="h-image">
       <img class="preview" id="preview" alt="" hidden>
+    </div>
+    <div class="field" id="credit-field" hidden>
+      <label for="f-credit">Photo credit</label>
+      <p class="hint" id="h-credit">Who made the image. Shown with it in the library.</p>
+      <input type="text" id="f-credit" name="credit" aria-describedby="h-credit" autocomplete="off">
+    </div>
+    <div class="field" id="pdf-field" hidden>
+      <label for="f-pdf">PDF</label>
+      <p class="hint" id="h-pdf">One PDF file, up to 10 MB.</p>
+      <input type="file" id="f-pdf" accept="application/pdf,.pdf" aria-describedby="h-pdf">
     </div>
     <div class="field" id="link-field" hidden>
       <label for="f-link">Link</label>
@@ -127,13 +141,13 @@
     </div>
     <fieldset class="field">
       <legend>Keywords <span class="opt">optional</span></legend>
-      <p class="hint">Pick from existing keywords.</p>
-      <div class="chips" data-name="keywords" data-kind="checkbox"
+      <p class="hint">Pick from existing keywords. Five at most, suggestions included (<span id="kw-count">0 of 5</span>).</p>
+      <div class="chips" id="f-keywords" data-name="keywords" data-kind="checkbox"
            data-options="Embodied experience|Oral traditions|Collective memory|Ecological relationships|Spiritual practices|Community-based processes|Epistemic plurality|Situated knowledge|Relational ways of knowing|Intercultural translation and dialogue"></div>
     </fieldset>
     <div class="field">
-      <label for="f-extra">Other keywords <span class="opt">optional</span></label>
-      <p class="hint" id="h-extra">Separate them with commas.</p>
+      <label for="f-extra">Suggest new keywords <span class="opt">optional</span></label>
+      <p class="hint" id="h-extra">Separate them with commas. They appear in the library once the editors approve them.</p>
       <input type="text" id="f-extra" name="extra" aria-describedby="h-extra" autocomplete="off">
     </div>
     <div class="field">
@@ -156,6 +170,10 @@
         <input type="checkbox" id="f-consent" required>
         <span>I agree that this entry may be published in the library after review.</span>
       </label>
+      <label class="consent" id="rights-row" hidden>
+        <input type="checkbox" id="f-rights">
+        <span>I have the rights to publish this image / PDF.</span>
+      </label>
     </fieldset>
     <p class="error" id="error" role="alert"></p>
     <div class="actions">
@@ -177,9 +195,13 @@
   // Entries go to the library's Apps Script (Code.gs, doPost), which writes them into the spreadsheet Ulla reviews
   // and keeps uploaded images in its own Drive folder. Same /exec address as DATA_URL in index.html.
   const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbyoCptBhhcc_0VpH12DnJcy_5vwQRzoJQulRj9Om2mTi-auTBySrdGfb9f7mFCj4SkefQ/exec';
+  const DATA_URL = SUBMIT_URL + '?format=json'; // the library's data, here for the keyword list
   const MAX_SIDE = 2000; // longest side of an uploaded image, in pixels
+  const MAX_PDF = 10 * 1024 * 1024; // the script's limit (Code.gs MAX_PDF_BYTES)
+  const MAX_KEYWORDS = 5; // picked and suggested together (Code.gs MAX_KEYWORDS)
   const $ = id => document.getElementById(id);
   let image = null; // { mime, data } once a picture is chosen and shrunk
+  let pdf = null;   // { mime, data } once a PDF is chosen
 
   // RC pages have no viewport tag: on phones this frame is laid out 980 px wide and shrunk.
   // Every size is in rem, so a larger root font size scales the page back up. (CSS zoom would leave iPhone text tiny.)
@@ -188,21 +210,63 @@
   }
 
   // build the chip groups from their option lists
-  document.querySelectorAll('.chips[data-options]').forEach((group, g) => {
-    group.dataset.options.split('|').forEach((opt, i) => {
+  function fillChips(group, options) {
+    const checked = new Set([...group.querySelectorAll('input:checked')].map(i => i.value));
+    group.replaceChildren(...options.map((opt, i) => {
       const label = document.createElement('label');
       label.className = 'chip';
-      const input = Object.assign(document.createElement('input'), { type: group.dataset.kind, name: group.dataset.name, value: opt, id: `c${g}-${i}` });
-      const span = Object.assign(document.createElement('span'), { textContent: opt });
-      label.append(input, span);
-      group.append(label);
-    });
-  });
+      const input = Object.assign(document.createElement('input'),
+        { type: group.dataset.kind, name: group.dataset.name, value: opt, id: `${group.id}-${i}`, checked: checked.has(opt) });
+      label.append(input, Object.assign(document.createElement('span'), { textContent: opt }));
+      return label;
+    }));
+  }
+  document.querySelectorAll('.chips[data-options]').forEach(group => fillChips(group, group.dataset.options.split('|')));
+
+  // five keywords at most: once picks and suggestions reach five, the other chips switch off
+  const suggestions = () => $('f-extra').value.split(',').map(s => s.trim()).filter(Boolean);
+  const keywordsUsed = () => document.querySelectorAll('input[name=keywords]:checked').length + suggestions().length;
+  function limitKeywords() {
+    const used = keywordsUsed();
+    document.querySelectorAll('input[name=keywords]').forEach(b => { b.disabled = !b.checked && used >= MAX_KEYWORDS; });
+    $('kw-count').textContent = used + ' of ' + MAX_KEYWORDS;
+  }
+  $('f-keywords').addEventListener('change', limitKeywords);
+  $('f-extra').addEventListener('input', limitKeywords);
+
+  // The keyword list lives in the spreadsheet's "Keywords" tab, where the editors approve new ones.
+  // The library page saves the latest data in this browser (same site), so the form shows that list at once
+  // and updates it when fresh data arrives. The list in the page above is the fallback.
+  const useKeywords = text => {
+    const list = JSON.parse(text).keywords;
+    if (Array.isArray(list) && list.length) { fillChips($('f-keywords'), list); limitKeywords(); }
+  };
+  try { const saved = localStorage.getItem('library-data'); if (saved) useKeywords(saved); } catch (e) {}
+  fetch(DATA_URL, { credentials: 'omit', cache: 'no-store' })
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(text => { useKeywords(text); try { localStorage.setItem('library-data', text); } catch (e) {} })
+    .catch(() => {});
 
   const type = () => (document.querySelector('input[name=type]:checked') || {}).value || '';
   $('f-type').addEventListener('change', () => {
-    $('image-field').hidden = type() !== 'Image';
+    $('image-field').hidden = $('credit-field').hidden = type() !== 'Image';
+    $('pdf-field').hidden = type() !== 'PDF';
     $('link-field').hidden = type() !== 'Link';
+    $('rights-row').hidden = type() === 'Link';
+  });
+
+  // a PDF goes as it is, so only its size is checked here
+  $('f-pdf').addEventListener('change', () => {
+    pdf = null;
+    $('error').textContent = '';
+    const file = $('f-pdf').files[0];
+    if (!file) return;
+    if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) { $('error').textContent = 'This file is not a PDF.'; return; }
+    if (file.size > MAX_PDF) { $('error').textContent = 'This PDF is ' + (file.size / 1048576).toFixed(1) + ' MB. The limit is 10 MB.'; return; }
+    const reader = new FileReader();
+    reader.onload = () => { pdf = { mime: 'application/pdf', data: String(reader.result).split(',')[1] }; };
+    reader.onerror = () => { $('error').textContent = 'This file could not be read. Try saving the PDF again.'; };
+    reader.readAsDataURL(file);
   });
 
   // shrink the picture in the browser: phones make 5–15 MB photos, the library needs a few hundred kB
@@ -233,18 +297,22 @@
   function problems() {
     if (!type()) return [$('f-type').querySelector('input'), 'Please choose Image or Link.'];
     if (type() === 'Image' && !image) return [$('f-image'), 'Please choose an image.'];
+    if (type() === 'Image' && !$('f-credit').value.trim()) return [$('f-credit'), 'Please give a photo credit for the image.'];
+    if (type() === 'PDF' && !pdf) return [$('f-pdf'), 'Please choose a PDF of up to 10 MB.'];
     if (type() === 'Link' && !/^https?:\/\/\S+\.\S+/.test($('f-link').value.trim())) return [$('f-link'), 'Please give the link as a full web address, starting with https://'];
     for (const el of $('form').querySelectorAll('input[required], textarea[required]')) {
       if (el.type === 'checkbox' ? !el.checked : !el.value.trim()) return [el, 'Please fill in everything that is not marked optional.'];
       if (!el.checkValidity()) return [el, el.type === 'email' ? 'Please check the email address.' : 'Please check this field.'];
     }
     if ($('f-year').value.trim() && !$('f-year').checkValidity()) return [$('f-year'), 'Please give the year as a number, for example 2018.'];
+    if (keywordsUsed() > MAX_KEYWORDS) return [$('f-extra'), 'Five keywords at most, suggestions included. Please remove some.'];
+    if (type() !== 'Link' && !$('f-rights').checked) return [$('f-rights'), 'Please confirm that you have the rights to publish this ' + (type() === 'PDF' ? 'PDF.' : 'image.')];
     return null;
   }
 
   const FAILED = {
     busy: 'The library is receiving a lot of contributions right now. Please try again in an hour.',
-    image: 'The image could not be accepted. Try a JPEG or PNG.',
+    file: 'The file could not be accepted. Images: JPEG or PNG. PDFs: up to 10 MB.',
   };
 
   $('form').addEventListener('submit', async e => {
@@ -253,12 +321,13 @@
     if (issue) { $('error').textContent = issue[1]; issue[0].focus(); return; }
     $('error').textContent = '';
     $('send').disabled = true;
-    $('status').textContent = 'Sending…';
+    $('status').textContent = type() === 'PDF' ? 'Sending… A large PDF can take a minute.' : 'Sending…';
 
     const v = id => $(id).value;
     const entry = {
       type: type(), title: v('f-title'), authors: v('f-authors'), year: v('f-year'),
-      link: type() === 'Link' ? v('f-link') : '', image: type() === 'Image' ? image : null,
+      link: type() === 'Link' ? v('f-link') : '', file: type() === 'Image' ? image : type() === 'PDF' ? pdf : null,
+      credit: type() === 'Image' ? v('f-credit') : '', rights: type() !== 'Link' && $('f-rights').checked,
       description: v('f-why'), extra: v('f-extra'), name: v('f-name'), email: v('f-email'),
       keywords: [...document.querySelectorAll('input[name=keywords]:checked')].map(c => c.value),
       consent: $('f-consent').checked, website: v('f-website'),
