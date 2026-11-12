@@ -7,6 +7,9 @@
 <title>/ɔːlˈtəːnətɪv/ – digital library</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- the library data: the script answers from script.google.com through a redirect to googleusercontent.com -->
+<link rel="preconnect" href="https://script.google.com" crossorigin>
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600..900&family=Roboto+Mono:ital,wght@0,400..700;1,400..700&family=Source+Code+Pro:wght@400..700&display=swap" rel="stylesheet">
 <style>
   /* same tokens as the exposition stylesheet (pg.css). Sizes are in rem, so phones can scale the whole page (see the script). */
@@ -167,9 +170,12 @@
         .filter(x => x.n > 0).sort((a, b) => b.n - a.n).slice(0, 4).map(x => x.o);
     });
 
+    // safe to run again when fresh data replaces the saved copy: lists are rebuilt, handlers are replaced, not added
     function buildFilters() {
+      $('keywords').replaceChildren();
+      $('type').replaceChildren($('type').options[0]);
+      $('filters').hidden = !items.length;
       if (!items.length) return;
-      $('filters').hidden = false;
       const counts = {};
       items.forEach(it => it.keywords.forEach(k => {
         const key = k.toLowerCase();
@@ -182,8 +188,9 @@
         .forEach(key => $('keywords').append(el('li', null, chip(key, counts[key].label + ' (' + counts[key].n + ')'))));
       [...new Set(items.map(it => it.type).filter(Boolean))]
         .forEach(t => $('type').append(el('option', { value: t, textContent: t })));
-      $('q').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
-      $('type').addEventListener('change', e => { state.type = e.target.value; render(); });
+      $('type').value = state.type;
+      $('q').oninput = e => { state.q = e.target.value.trim().toLowerCase(); render(); };
+      $('type').onchange = e => { state.type = e.target.value; render(); };
     }
 
     function chip(key, label) {
@@ -259,7 +266,7 @@
 
     const viewer = $('viewer');
     viewer.querySelector('.close').onclick = () => viewer.close();
-    viewer.addEventListener('click', e => { if (e.target === viewer) viewer.close(); }); // click outside the image
+    viewer.onclick = e => { if (e.target === viewer) viewer.close(); }; // click outside the image
     function view(it) {
       Object.assign(viewer.querySelector('img'), { src: it.image.full, alt: it.title });
       viewer.querySelector('p').textContent = [it.title, it.authors, it.year].filter(Boolean).join(' · ');
@@ -292,12 +299,26 @@
     render();
   }
 
-  $('count').textContent = 'Loading the library…';
+  // The script takes 1–2 s to answer. The copy this browser saved last time shows at once,
+  // and the fresh data replaces it when it arrives (only if something changed).
+  const SAVED = 'library-data';
+  let saved = null;
+  try {
+    saved = localStorage.getItem(SAVED);
+    if (saved) start(JSON.parse(saved));
+  } catch (e) { saved = null; }
+  if (!saved) $('count').textContent = 'Loading the library…';
+
   // credentials: 'omit' keeps the visitor's Google sign-in out of the request, so phones signed in to Google work too
   fetch(DATA_URL, { credentials: 'omit', cache: 'no-store' })
-    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-    .then(start)
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(text => {
+      const data = JSON.parse(text);
+      if (text !== saved) start(data);
+      try { localStorage.setItem(SAVED, text); } catch (e) {}
+    })
     .catch(() => {
+      if (saved) return; // keep showing the saved copy
       $('count').textContent = '';
       const empty = $('empty');
       empty.hidden = false;
